@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "server": "nodemon src/main.js"
   },
   "devDependencies": {
     "@types/node": "^20.1.2",
@@ -9,6 +9,7 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-node": "^11.1.0",
+    "nodemon": "^2.0.22",
     "prettier": "^2.8.8",
     "typescript": "^5.0.4"
   }
