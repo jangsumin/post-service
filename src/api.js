@@ -8,20 +8,6 @@
  * @property {string} content
  */
 
-/** @type {Post[]} */
-const posts = [
-  {
-    id: 'my_first_post',
-    title: 'My first post',
-    content: 'Hello!',
-  },
-  {
-    id: 'my_second_post',
-    title: 'My second post',
-    content: 'Second post!',
-  },
-]
-
 // API의 형식을 타입으로 생성
 /**
  * @typedef APIResponse
@@ -36,6 +22,30 @@ const posts = [
  * @property {(matches: string[], body: Object.<string, *> | undefined) => Promise<APIResponse>} callback
  */
 
+const fs = require('fs')
+const DB_JSON_FILENAME = 'database.json'
+
+/** @returns {Promise<Post[]>} */
+async function getPosts() {
+  const json = await fs.promises.readFile(DB_JSON_FILENAME, 'utf-8')
+  return JSON.parse(json).posts
+}
+
+/**
+ * @param {Post[]} posts
+ */
+async function savePosts(posts) {
+  const content = {
+    posts,
+  }
+
+  return fs.promises.writeFile(
+    DB_JSON_FILENAME,
+    JSON.stringify(content),
+    'utf-8'
+  )
+}
+
 /** @type {Route[]} */
 const routes = [
   {
@@ -43,7 +53,7 @@ const routes = [
     method: 'GET',
     callback: async () => ({
       statusCode: 200,
-      body: posts,
+      body: await getPosts(),
     }),
   },
 
@@ -59,6 +69,7 @@ const routes = [
         }
       }
 
+      const posts = await getPosts()
       const post = posts.find((_post) => _post.id === postId)
 
       if (!post) {
@@ -94,7 +105,9 @@ const routes = [
         content: body.content,
       }
 
+      const posts = await getPosts()
       posts.push(newPost)
+      savePosts(posts)
 
       return {
         statusCode: 200,
