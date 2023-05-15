@@ -11,6 +11,28 @@
 
 const http = require('http')
 
+// JSDoc으로 타입 정의
+/**
+ * @typedef Post
+ * @property {string} id
+ * @property {string} title
+ * @property {string} content
+ */
+
+/** @type {Post[]} */
+const posts = [
+  {
+    id: 'my_first_post',
+    title: 'My first post',
+    content: 'Hello!',
+  },
+  {
+    id: 'my_second_post',
+    title: 'My second post',
+    content: 'Second post!',
+  },
+]
+
 /**
  * Post
  *
@@ -20,12 +42,20 @@ const http = require('http')
  */
 
 const server = http.createServer((req, res) => {
+  // 소괄호를 사용해서 정규식에서 캡쳐 그룹 기능으로 url에서 원하는 부분만 추출 가능
+  const POSTS_ID_REGEX = /^\/posts\/([a-zA-Z0-9-_]+)$/
+  const postIdRegexResult =
+    (req.url && POSTS_ID_REGEX.exec(req.url)) || undefined
+
   if (req.url === '/posts' && req.method === 'GET') {
     res.statusCode = 200
-    res.end('OK')
-  } else if (req.url && /^\/posts\/[a-zA-Z0-9-_]+$/.test(req.url)) {
+    res.end('List of posts')
+  } else if (postIdRegexResult) {
+    // GET /posts/:id
+    const postId = postIdRegexResult[1]
+    console.log(`postId: ${postId}`)
     res.statusCode = 200
-    res.end('Some content of the post')
+    res.end('Reading a post')
   } else if (req.url === '/posts' && req.method === 'POST') {
     res.statusCode = 200
     res.end('Creating post')
